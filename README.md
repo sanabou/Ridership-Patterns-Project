@@ -25,9 +25,10 @@ Assess the impact of vacations and school breaks on ridership patterns.
 5. Dashboard Development using Shiny
 Build an interactive dashboard using the Shiny framework in R.
 Include key visualizations depicting overall ridership trends, weekly variations, and comparisons with the norm.
-Example of tools :
 
+Example of tools :
 Allow the user to select a reference period and a period to compare against and provide meaningfull figures to highlight the differences between the two selected periods, discriminating by day of week.
+
 Allow the user to quickly select a stations of interest with a webnmap and procides key statistics about the current trend for this stations.
 
 6. Statistical Methods
