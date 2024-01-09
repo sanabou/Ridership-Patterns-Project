@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Analyzing and Visualizing Ridership Patterns in Île-de-France Rail Network</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="MSG_Project_files/libs/clipboard/clipboard.min.js"></script>
+<script src="MSG_Project_files/libs/quarto-html/quarto.js"></script>
+<script src="MSG_Project_files/libs/quarto-html/popper.min.js"></script>
+<script src="MSG_Project_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="MSG_Project_files/libs/quarto-html/anchor.min.js"></script>
+<link href="MSG_Project_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="MSG_Project_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="MSG_Project_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="MSG_Project_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="MSG_Project_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Analyzing and Visualizing Ridership Patterns in Île-de-France Rail Network</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p><strong>GROUP :</strong> Melek Boussif - Sana Bouhaouala - Ghailene Boughzala</p>
+<p><strong>Class :</strong> M2 SIA</p>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>In the hustle and bustle of daily life, our journeys through Île-de-France become the canvas upon which diverse stories of connection and discovery unfold. More than mere transit points, the train stations in this region serve as gateways to experiences, from the familiar commute to work and the excitement of school days to the joy of exploring new destinations for leisure.</p>
+<p>Every day, Île-de-France’s train stations host a symphony of journeys. The early morning rush witnesses commuters navigating their way to work, students eagerly embarking on their educational quests, and families setting out for weekend adventures. The efficiency of the train network is paramount in ensuring that these journeys are seamless, reliable, and accessible to all. However, the rhythm of people traveling through Île-de-France’s railway stations is dynamic, dancing with the seasons and reflecting societal patterns.</p>
+<p>This project, spanning the years 2017 to 2022, is a deep dive into the intricate dance of ridership patterns across different periods. By dissecting the data, our aim is to shed light on how the community’s travel landscape evolves during holidays, school breaks, and other distinctive times. Going beyond mere statistics, our goal is to provide decision-makers with insights that capture the nuanced shifts in ridership, facilitating informed decision-making. Through the lens of data, we aspire to unveil the unique stories woven into each commuter’s journey and contribute to the ongoing evolution of transportation services in this vibrant region.</p>
+</section>
+<section id="loading-the-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="loading-the-libraries">Loading the libraries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'dplyr' a été compilé avec la version R 4.2.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attachement du package : 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Les objets suivants sont masqués depuis 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Les objets suivants sont masqués depuis 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'ggplot2' a été compilé avec la version R 4.2.2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attachement du package : 'lubridate'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Les objets suivants sont masqués depuis 'package:base':
+
+    date, intersect, setdiff, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(strucchange)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'strucchange' a été compilé avec la version R 4.2.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Le chargement a nécessité le package : zoo</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'zoo' a été compilé avec la version R 4.2.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attachement du package : 'zoo'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Les objets suivants sont masqués depuis 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Le chargement a nécessité le package : sandwich</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'sandwich' a été compilé avec la version R 4.2.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zoo)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'sf' a été compilé avec la version R 4.2.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.9.3, GDAL 3.5.2, PROJ 8.2.1; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spdep)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'spdep' a été compilé avec la version R 4.2.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Le chargement a nécessité le package : spData</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'spData' a été compilé avec la version R 4.2.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>To access larger datasets in this package, install the spDataLarge
+package with: `install.packages('spDataLarge',
+repos='https://nowosad.github.io/drat/', type='source')`</code></pre>
+</div>
+</div>
+</section>
+<section id="data-collection-and-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-collection-and-cleaning">1. Data Collection and Cleaning</h2>
+<section id="merging-historique-des-données-de-validation-sur-le-réseau-ferré" class="level3">
+<h3 class="anchored" data-anchor-id="merging-historique-des-données-de-validation-sur-le-réseau-ferré">1.1. Merging “Historique des données de validation sur le réseau ferré”</h3>
+<p>We noticed that the “Historique des données de validation sur le réseau ferré” is divided into multiple files. In order to conduct a relevant analysis, we need to merge those files to create one single file.</p>
+<section id="a.-loading-the-files" class="level4">
+<h4 class="anchored" data-anchor-id="a.-loading-the-files">a. Loading the files</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>histo_directory_path <span class="ot">=</span> <span class="st">"C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data"</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>histo_file_list <span class="ot">=</span> <span class="fu">list.files</span>(histo_directory_path, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(histo_file_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2017_S2_NB_FER.txt"
+ [2] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2018_S1_NB_FER.txt"
+ [3] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2018_S2_NB_Fer.txt"
+ [4] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2019_S1_NB_FER.txt"
+ [5] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2019_S2_NB_FER.txt"
+ [6] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2020_S1_NB_FER.txt"
+ [7] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2020_S2_NB_FER.txt"
+ [8] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2021_S1_NB_FER.txt"
+ [9] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2021_S2_NB_FER.txt"
+[10] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2022_S1_NB_FER.txt"
+[11] "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data/2022_S2_NB_FER.txt"</code></pre>
+</div>
+</div>
+</section>
+<section id="b.-creating-a-function-to-detect-delimiter-in-a-file" class="level4">
+<h4 class="anchored" data-anchor-id="b.-creating-a-function-to-detect-delimiter-in-a-file">b. Creating a function to detect delimiter in a file</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>detect_delimiter <span class="ot">&lt;-</span> <span class="cf">function</span>(file_path) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  lines <span class="ot">=</span> <span class="fu">readLines</span>(file_path, <span class="at">n =</span> <span class="dv">5</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  delimiters <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, <span class="st">";"</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (delimiter <span class="cf">in</span> delimiters) {</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">any</span>(<span class="fu">grepl</span>(delimiter, lines))) {</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(delimiter)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Unable to detect delimiter in file: "</span>, file_path)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="c.-merging-the-files" class="level4">
+<h4 class="anchored" data-anchor-id="c.-merging-the-files">c.&nbsp;Merging the files</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>histo_data <span class="ot">=</span> <span class="fu">data.frame</span>()</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (file <span class="cf">in</span> histo_file_list) {</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  delimiter <span class="ot">=</span> <span class="fu">detect_delimiter</span>(file)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">=</span> <span class="fu">read.delim</span>(file, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> delimiter, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"lda"</span> <span class="sc">%in%</span> <span class="fu">names</span>(data)) {</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    data <span class="ot">=</span> data <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">ID_REFA_LDA =</span> lda)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if columns are empty before converting to character</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"ID_REFA_LDA"</span> <span class="sc">%in%</span> <span class="fu">names</span>(data) <span class="sc">&amp;&amp;</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(data<span class="sc">$</span>ID_REFA_LDA))) {</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    data<span class="sc">$</span>ID_REFA_LDA <span class="ot">=</span> <span class="fu">as.character</span>(data<span class="sc">$</span>ID_REFA_LDA)</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"NB_VALD"</span> <span class="sc">%in%</span> <span class="fu">names</span>(data) <span class="sc">&amp;&amp;</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(data<span class="sc">$</span>NB_VALD))) {</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>    data<span class="sc">$</span>NB_VALD <span class="ot">=</span> <span class="fu">as.character</span>(data<span class="sc">$</span>NB_VALD)</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"pourc_validations"</span> <span class="sc">%in%</span> <span class="fu">names</span>(data) <span class="sc">&amp;&amp;</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(data<span class="sc">$</span>pourc_validations))) {</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>    data<span class="sc">$</span>pourc_validations <span class="ot">=</span> <span class="fu">as.character</span>(data<span class="sc">$</span>pourc_validations)</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Merge</span></span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>  histo_data <span class="ot">=</span> <span class="fu">bind_rows</span>(histo_data, data)</span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="d.-storing-the-data-that-we-have-obtained" class="level4">
+<h4 class="anchored" data-anchor-id="d.-storing-the-data-that-we-have-obtained">d.&nbsp;Storing the data that we have obtained</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(histo_data, <span class="fu">file.path</span>(<span class="st">"C:/Users/msi/Documents/Gustave Eiffel/Projet R/data/histo_dataset.csv"</span>), <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="loading-all-of-the-dataframes" class="level3">
+<h3 class="anchored" data-anchor-id="loading-all-of-the-dataframes">1.2. Loading all of the dataframes</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>historique <span class="ot">=</span> <span class="fu">read.delim</span>(<span class="st">"C:/Users/msi/Documents/Gustave Eiffel/Projet R/data/histo_dataset.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">","</span>, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>validations <span class="ot">=</span> <span class="fu">read.delim</span>(<span class="st">"C:/Users/msi/Documents/Gustave Eiffel/Projet R/data/validations-reseau-ferre-nombre-validations-par-jour-1er-semestre.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">";"</span>, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>arrets <span class="ot">=</span> <span class="fu">read.delim</span>(<span class="st">"C:/Users/msi/Documents/Gustave Eiffel/Projet R/data/zones-d-arrets.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">";"</span>, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="cleaning-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="cleaning-the-data">1.3. Cleaning the data</h3>
+<section id="a.-visualizing-the-unique-values-of-each-column" class="level4">
+<h4 class="anchored" data-anchor-id="a.-visualizing-the-unique-values-of-each-column">a. Visualizing the unique values of each column</h4>
+<p>Cleaning the data is crucial as it ensures accuracy, reliability, and meaningful insights by addressing missing values, handling outliers, and rectifying inconsistencies, laying the foundation for robust analyses and reliable decision-making. In order to do the right cleaning, we visualized the unique values of each column. This helped us detect the nan values, the fact that all of the columns are typed as characters and even the presence of “?” values in some columns.</p>
+</section>
+<section id="b.-converting-some-columns-into-integers" class="level4">
+<h4 class="anchored" data-anchor-id="b.-converting-some-columns-into-integers">b. Converting some columns into integers</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>historique <span class="ot">=</span> historique <span class="sc">%&gt;%</span> <span class="fu">mutate_at</span>(<span class="fu">vars</span>(CODE_STIF_TRNS), as.integer)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>historique <span class="ot">=</span> historique <span class="sc">%&gt;%</span> <span class="fu">mutate_at</span>(<span class="fu">vars</span>(CODE_STIF_ARRET), as.integer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There was 1 warning in `mutate()`.
+ℹ In argument: `CODE_STIF_ARRET = .Primitive("as.integer")(CODE_STIF_ARRET)`.
+Caused by warning:
+! NAs introduits lors de la conversion automatique</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>historique <span class="ot">=</span> historique <span class="sc">%&gt;%</span> <span class="fu">mutate_at</span>(<span class="fu">vars</span>(CODE_STIF_RES), as.integer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There was 1 warning in `mutate()`.
+ℹ In argument: `CODE_STIF_RES = .Primitive("as.integer")(CODE_STIF_RES)`.
+Caused by warning:
+! NAs introduits lors de la conversion automatique</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>historique <span class="ot">=</span> historique <span class="sc">%&gt;%</span> <span class="fu">mutate_at</span>(<span class="fu">vars</span>(NB_VALD), as.integer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="c.-replacing-empty-cells-with-na" class="level4">
+<h4 class="anchored" data-anchor-id="c.-replacing-empty-cells-with-na">c.&nbsp;Replacing empty cells with NA</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>historique[historique <span class="sc">==</span> <span class="st">""</span>] <span class="ot">=</span> <span class="cn">NA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="d.-replacing-values-in-two-different-columns" class="level4">
+<h4 class="anchored" data-anchor-id="d.-replacing-values-in-two-different-columns">d.&nbsp;Replacing “?” values in two different columns</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>historique <span class="ot">=</span> historique <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">ID_REFA_LDA  =</span> <span class="fu">ifelse</span>(ID_REFA_LDA  <span class="sc">==</span> <span class="st">"?"</span>, <span class="cn">NA</span>, ID_REFA_LDA ))</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>historique <span class="ot">=</span> historique <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">CATEGORIE_TITRE =</span> <span class="fu">ifelse</span>(CATEGORIE_TITRE <span class="sc">==</span> <span class="st">"?"</span>, <span class="cn">NA</span>, CATEGORIE_TITRE))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="e.-checking-for-duplicated-rows" class="level4">
+<h4 class="anchored" data-anchor-id="e.-checking-for-duplicated-rows">e. Checking for duplicated rows</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>duplicated_rows <span class="ot">=</span> <span class="fu">duplicated</span>(historique)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(historique[duplicated_rows, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] JOUR            CODE_STIF_TRNS  CODE_STIF_RES   CODE_STIF_ARRET
+[5] LIBELLE_ARRET   ID_REFA_LDA     CATEGORIE_TITRE NB_VALD        
+&lt;0 lignes&gt; (ou 'row.names' de longueur nulle)</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> Handling duplicated values is important for maintaining data accuracy and preventing the distortion of statistical analyses and modeling outcomes, ensuring the reliability of insights derived from the dataset. In our case, we don’t have any duplicated rows. Thus, we don’t have any special treatment to do regarding the duplicated rows.</p>
+</section>
+<section id="f.-handling-missing-values" class="level4">
+<h4 class="anchored" data-anchor-id="f.-handling-missing-values">f.&nbsp;Handling missing values</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of missing values per column</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>na_counts <span class="ot">=</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(historique))</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(na_counts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           JOUR  CODE_STIF_TRNS   CODE_STIF_RES CODE_STIF_ARRET   LIBELLE_ARRET 
+              0               0           13377           13377               0 
+    ID_REFA_LDA CATEGORIE_TITRE         NB_VALD 
+              0         1290446               0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Percentage of missing values in the whole dataframe</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>total_cells <span class="ot">=</span> <span class="fu">prod</span>(<span class="fu">dim</span>(historique))</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>missing_cells <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(historique))</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>missing_percentage <span class="ot">=</span> missing_cells <span class="sc">/</span> total_cells <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Overall percentage of missing values in the dataframe:"</span>, missing_percentage, <span class="st">"%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Overall percentage of missing values in the dataframe: 1.52895770679188 %"</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> Handling missing values is crucial because they can introduce bias, compromise data integrity, and lead to inaccurate results, affecting the reliability and interpretability of analyses and models. To achieve that, we first visualized the number of missing values within each column. Then we calculated the percentage of missing values in the whole dataframe. Since the missing values only represent 1.5% (which is not a significant percentage) of the whole data, we decided to delete them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>historique <span class="ot">=</span> <span class="fu">na.omit</span>(historique)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="g.-handling-outliers" class="level4">
+<h4 class="anchored" data-anchor-id="g.-handling-outliers">g. Handling outliers</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of outliers per column</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>outlier_info <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">Column =</span> <span class="fu">character</span>(), <span class="at">Total_Outliers =</span> <span class="fu">numeric</span>(), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (column <span class="cf">in</span> <span class="fu">names</span>(historique)) {</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.numeric</span>(historique[[column]])) {</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    iqr <span class="ot">&lt;-</span> <span class="fu">IQR</span>(historique[[column]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>    upper_bound <span class="ot">&lt;-</span> <span class="fu">quantile</span>(historique[[column]], <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fl">1.5</span> <span class="sc">*</span> iqr</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    lower_bound <span class="ot">&lt;-</span> <span class="fu">quantile</span>(historique[[column]], <span class="fl">0.25</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">-</span> <span class="fl">1.5</span> <span class="sc">*</span> iqr</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>    outliers <span class="ot">&lt;-</span> historique[[column]] <span class="sc">&gt;</span> upper_bound <span class="sc">|</span> historique[[column]] <span class="sc">&lt;</span> lower_bound</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>    total_outliers <span class="ot">&lt;-</span> <span class="fu">sum</span>(outliers)</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>    outlier_info <span class="ot">&lt;-</span> <span class="fu">rbind</span>(outlier_info, <span class="fu">data.frame</span>(<span class="at">Column =</span> column, <span class="at">Total_Outliers =</span> total_outliers))</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Total number of outliers across all columns</span></span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>total_outliers_all_columns <span class="ot">&lt;-</span> <span class="fu">sum</span>(outlier_info<span class="sc">$</span>Total_Outliers)</span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total number of outliers in the entire dataset:"</span>, total_outliers_all_columns, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total number of outliers in the entire dataset: 1753399 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>outliers_percentage <span class="ot">=</span> total_outliers_all_columns <span class="sc">/</span> total_cells <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Overall percentage of outliers in the whole dataframe:"</span>, outliers_percentage, <span class="st">"%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Overall percentage of outliers in the whole dataframe: 2.03528159287213 %"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(outlier_info)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Column Total_Outliers
+1  CODE_STIF_TRNS              0
+2   CODE_STIF_RES              0
+3 CODE_STIF_ARRET          19311
+4     ID_REFA_LDA         434189
+5         NB_VALD        1299899</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> Handling outliers is essential to ensure the robustness and accuracy of statistical analyses and machine learning models, preventing skewed results and maintaining the integrity of data-driven insights. In this analysis, we first visualized the number of outliers within each column. Then we calculated the percentage of outliers in the whole dataframe. The outliers only represent 2% (which is not a significant percentage) of the whole data. However, we cannot consider them as outliers because :</p>
+<ul>
+<li><p>The “ID_REFA_LDA” represents ID. Having an outlier in that column doesn’t mean anything</p></li>
+<li><p>The “CODE_STIF_ARRET” column cannot present outliers either</p></li>
+<li><p>The “NB_VALD” is the number of validations. Thus, depending on the day and the period, the number of validations may be more or less than usual. This information is relevant for our analysis</p></li>
+</ul>
+<p>This leaves us with this final “historique” dataframe :</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(historique)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     JOUR           CODE_STIF_TRNS  CODE_STIF_RES   CODE_STIF_ARRET   
+ Length:9466926     Min.   :100.0   Min.   :110.0   Min.   :     1.0  
+ Class :character   1st Qu.:100.0   1st Qu.:110.0   1st Qu.:   235.0  
+ Mode  :character   Median :800.0   Median :801.0   Median :   483.0  
+                    Mean   :483.9   Mean   :500.3   Mean   :   991.5  
+                    3rd Qu.:800.0   3rd Qu.:805.0   3rd Qu.:   722.0  
+                    Max.   :810.0   Max.   :854.0   Max.   :483901.0  
+ LIBELLE_ARRET       ID_REFA_LDA     CATEGORIE_TITRE       NB_VALD        
+ Length:9466926     Min.   :     0   Length:9466926     Min.   :     5.0  
+ Class :character   1st Qu.: 66803   Class :character   1st Qu.:    19.0  
+ Mode  :character   Median : 71166   Mode  :character   Median :   138.0  
+                    Mean   : 86760                      Mean   :   831.4  
+                    3rd Qu.: 71870                      3rd Qu.:   536.0  
+                    Max.   :483315                      Max.   :129080.0  </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="merging-the-historique-dataframe-with-the-zone-darrets-dataframe" class="level3">
+<h3 class="anchored" data-anchor-id="merging-the-historique-dataframe-with-the-zone-darrets-dataframe">1.4. Merging the “historique” dataframe with the “zone d’arrets” dataframe</h3>
+<section id="a.-the-merge" class="level4">
+<h4 class="anchored" data-anchor-id="a.-the-merge">a. The merge</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"ZdAYEpsg2154"</span>, <span class="st">"ZdAXEpsg2154"</span>, <span class="st">"ZdCId"</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>arrets <span class="ot">=</span> arrets[, cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">=</span> historique <span class="sc">%&gt;%</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ID_REFA_LDA, JOUR, LIBELLE_ARRET) <span class="sc">%&gt;%</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">sum_nbvald =</span> <span class="fu">sum</span>(<span class="fu">as.numeric</span>(NB_VALD), <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">'drop_last'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(arrets, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ID_REFA_LDA"</span> <span class="ot">=</span> <span class="st">"ZdCId"</span>), <span class="at">relationship =</span> <span class="st">"many-to-many"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="b.-handling-missing-values" class="level4">
+<h4 class="anchored" data-anchor-id="b.-handling-missing-values">b. Handling missing values</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of missing values per column</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>na_counts_merged <span class="ot">=</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(merged_df))</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(na_counts_merged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ID_REFA_LDA          JOUR LIBELLE_ARRET    sum_nbvald  ZdAYEpsg2154 
+            0             0             0             0          4570 
+ ZdAXEpsg2154 
+         4570 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total percentage of the missing values</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>total_cells <span class="ot">=</span> <span class="fu">prod</span>(<span class="fu">dim</span>(merged_df))</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>missing_cells <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(merged_df))</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>missing_percentage <span class="ot">=</span> missing_cells <span class="sc">/</span> total_cells <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Overall percentage of missing values in the merged dataframe:"</span>, missing_percentage, <span class="st">"%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Overall percentage of missing values in the merged dataframe: 0.0421752498837412 %"</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> Just like the other “historique” dataframe, we first visualized the number of missing values within each column and the percentage of missing values in the whole dataframe. The missing values only represent 0.04% (which is really not a significant percentage) of the whole data. Thus, we decided to delete them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">=</span> <span class="fu">na.omit</span>(merged_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="c.-dividing-the-jour-column-into-month-and-day-of-week" class="level4">
+<h4 class="anchored" data-anchor-id="c.-dividing-the-jour-column-into-month-and-day-of-week">c.&nbsp;Dividing the JOUR column into month and day of week</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>merged_df<span class="sc">$</span>JOUR <span class="ot">=</span> <span class="fu">as.Date</span>(merged_df<span class="sc">$</span>JOUR, <span class="at">format =</span> <span class="st">"%d/%m/%Y"</span>)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">month</span>(JOUR), <span class="at">day_of_week =</span> <span class="fu">wday</span>(JOUR, <span class="at">label =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>merged_df<span class="sc">$</span>month <span class="ot">=</span> <span class="fu">factor</span>(merged_df<span class="sc">$</span>month, <span class="at">levels =</span> <span class="fu">unique</span>(merged_df<span class="sc">$</span>month), <span class="at">labels =</span> month.name)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>merged_df<span class="sc">$</span>Month_Year <span class="ot">=</span> <span class="fu">format</span>(merged_df<span class="sc">$</span>JOUR, <span class="st">"%Y-%m"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Comment :</strong> Dividing a date variable will help us conduct different relevant analysis, depending on the months, the day of weeks and the years.</p>
+</section>
+</section>
+</section>
+<section id="exploratory-data-analysis-eda" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis-eda">2. Exploratory Data Analysis (EDA)</h2>
+<p>Conducting Exploratory Data Analysis (EDA) is essential because it helps uncover patterns, relationships, and key insights within a dataset, providing a foundational understanding of the data’s characteristics, facilitating informed decision-making, and guiding subsequent modeling or analytical approaches.</p>
+<section id="exploring-overall-trends" class="level3">
+<h3 class="anchored" data-anchor-id="exploring-overall-trends">2.1. Exploring overall trends</h3>
+<p>Exploring overall trends is crucial as it provides a comprehensive understanding of the dataset’s patterns, enabling the identification of significant temporal variations and facilitating informed decision-making in data-driven analyses.</p>
+<section id="a.-plotting-ridership-trends-month---year" class="level4">
+<h4 class="anchored" data-anchor-id="a.-plotting-ridership-trends-month---year">a. Plotting ridership trends (month - year)</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_df, <span class="fu">aes</span>(<span class="at">x =</span> Month_Year, <span class="at">y =</span> sum_nbvald)) <span class="sc">+</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"summary"</span>, <span class="at">fun =</span> <span class="st">"mean"</span>, <span class="at">fill =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Monthly Average Ridership (per year)"</span>, <span class="at">x =</span> <span class="st">"Month"</span>, <span class="at">y =</span> <span class="st">"Mean Validations"</span>) <span class="sc">+</span></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="MSG_Project_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Comment :</strong> A significant drop (nb_vald near 0) is observed around the beginning of 2020, specifically March 2020, when there was a lockdown against COVID-19. Also, due to covid 19 we can see that there are 2 months where there is a big decrease in the validation</p>
+</section>
+<section id="b.-plotting-ridership-trends-day-of-week" class="level4">
+<h4 class="anchored" data-anchor-id="b.-plotting-ridership-trends-day-of-week">b. Plotting ridership trends (day of week)</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_df, <span class="fu">aes</span>(<span class="at">x =</span> day_of_week, <span class="at">y =</span> sum_nbvald)) <span class="sc">+</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Daily Ridership Trends"</span>,</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"sum_nbvald"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="MSG_Project_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>avg_weekday_ride <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(day_of_week) <span class="sc">%&gt;%</span></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Avg_NB_VALD =</span> <span class="fu">mean</span>(sum_nbvald, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(avg_weekday_ride)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 2
+  day_of_week Avg_NB_VALD
+  &lt;ord&gt;             &lt;dbl&gt;
+1 "dim\\."          3495.
+2 "lun\\."          8049.
+3 "mar\\."          8611.
+4 "mer\\."          8504.
+5 "jeu\\."          8585.
+6 "ven\\."          8406.
+7 "sam\\."          5119.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>avg_weekday_ride <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(day_of_week) <span class="sc">%&gt;%</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Avg_NB_VALD =</span> <span class="fu">mean</span>(sum_nbvald, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(avg_weekday_ride)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 2
+  day_of_week Avg_NB_VALD
+  &lt;ord&gt;             &lt;dbl&gt;
+1 "dim\\."          3495.
+2 "lun\\."          8049.
+3 "mar\\."          8611.
+4 "mer\\."          8504.
+5 "jeu\\."          8585.
+6 "ven\\."          8406.
+7 "sam\\."          5119.</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> We can see that :</p>
+<ul>
+<li><p>On Saturadys and Sundays people prefer to stay home after a week of work</p></li>
+<li><p>Ridership on Mondays and Fridays isslightly less that during the middle of the week. This is probably due to the fact that most of the people who work take that day to work from home</p></li>
+<li><p>The ridership peak is on Tuesday and Thursday. Whereas, Saturday and Sunday, especially Sunday are significantly lower compared to other days. This is due to the fact that people take time to rest during the weekends.</p></li>
+</ul>
+</section>
+<section id="c.-plotting-ridership-trends-month" class="level4">
+<h4 class="anchored" data-anchor-id="c.-plotting-ridership-trends-month">c.&nbsp;Plotting ridership trends (month)</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_df, <span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> sum_nbvald)) <span class="sc">+</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Monthly Ridership Trends"</span>,</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Month"</span>,</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"sum_nbvald"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="MSG_Project_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Comment :</strong> A decrease is observed around August, a period when many French people go on summer vacation. We can also observe that October and November are the months with the highest ridership (slightly above average).</p>
+</section>
+</section>
+<section id="most-frequented-stops" class="level3">
+<h3 class="anchored" data-anchor-id="most-frequented-stops">2.2 Most frequented stops</h3>
+<section id="a.-top-5-most-frequented-stops" class="level4">
+<h4 class="anchored" data-anchor-id="a.-top-5-most-frequented-stops">a. Top 5 most frequented stops</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>top_5_arrets <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(LIBELLE_ARRET) <span class="sc">%&gt;%</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_validations =</span> <span class="fu">sum</span>(sum_nbvald, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>, total_validations) <span class="sc">%&gt;%</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(total_validations))</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(top_5_arrets)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  LIBELLE_ARRET           total_validations
+  &lt;chr&gt;                               &lt;dbl&gt;
+1 LA DEFENSE-GRANDE ARCHE        1639252368
+2 MONTPARNASSE                    987728360
+3 GARE DE LYON                    973832272
+4 SAINT-LAZARE                    884860192
+5 GARE DU NORD                    747922074</code></pre>
+</div>
+</div>
+</section>
+<section id="b.-top-3-most-frequented-stops-per-day" class="level4">
+<h4 class="anchored" data-anchor-id="b.-top-3-most-frequented-stops-per-day">b. Top 3 most frequented stops per day</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>top_3_arrets_per_day <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(day_of_week, LIBELLE_ARRET) <span class="sc">%&gt;%</span></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_validations =</span> <span class="fu">sum</span>(sum_nbvald, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(day_of_week) <span class="sc">%&gt;%</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">3</span>, total_validations) <span class="sc">%&gt;%</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(day_of_week, <span class="fu">desc</span>(total_validations))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'day_of_week'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(top_3_arrets_per_day)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 21 × 3
+# Groups:   day_of_week [7]
+   day_of_week LIBELLE_ARRET           total_validations
+   &lt;ord&gt;       &lt;chr&gt;                               &lt;dbl&gt;
+ 1 "dim\\."    MONTPARNASSE                     85530912
+ 2 "dim\\."    GARE DE LYON                     84887257
+ 3 "dim\\."    LA DEFENSE-GRANDE ARCHE          78098456
+ 4 "lun\\."    LA DEFENSE-GRANDE ARCHE         276679152
+ 5 "lun\\."    MONTPARNASSE                    161745888
+ 6 "lun\\."    GARE DE LYON                    161001883
+ 7 "mar\\."    LA DEFENSE-GRANDE ARCHE         295309224
+ 8 "mar\\."    MONTPARNASSE                    164618680
+ 9 "mar\\."    GARE DE LYON                    164271009
+10 "mer\\."    LA DEFENSE-GRANDE ARCHE         288885696
+# ℹ 11 more rows</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> On weekdays, La Défense is always in the first position. Whereas, on Sundays, Gare de Lyon overtakes La Défense, but the top 3 remains the same.</p>
+</section>
+<section id="c.-top-3-most-frequented-stops-per-day" class="level4">
+<h4 class="anchored" data-anchor-id="c.-top-3-most-frequented-stops-per-day">c.&nbsp;Top 3 most frequented stops per day</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>top_3_arrets_per_month <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(month, LIBELLE_ARRET) <span class="sc">%&gt;%</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_validations =</span> <span class="fu">sum</span>(sum_nbvald, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(month) <span class="sc">%&gt;%</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">3</span>, total_validations) <span class="sc">%&gt;%</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(month, <span class="fu">desc</span>(total_validations))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'month'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(top_3_arrets_per_month)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 36 × 3
+# Groups:   month [12]
+   month    LIBELLE_ARRET           total_validations
+   &lt;fct&gt;    &lt;chr&gt;                               &lt;dbl&gt;
+ 1 January  LA DEFENSE-GRANDE ARCHE         143857144
+ 2 January  GARE DE LYON                     82023214
+ 3 January  MONTPARNASSE                     76573200
+ 4 February LA DEFENSE-GRANDE ARCHE         140816424
+ 5 February MONTPARNASSE                     85837368
+ 6 February GARE DE LYON                     82332656
+ 7 March    LA DEFENSE-GRANDE ARCHE         138847504
+ 8 March    GARE DE LYON                     83870773
+ 9 March    MONTPARNASSE                     82747552
+10 April    LA DEFENSE-GRANDE ARCHE         112752040
+# ℹ 26 more rows</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong></p>
+<ul>
+<li><p>From January to August, the top 3 most frequented stops are : La Défense - Gare de Lyon - Montparnasse</p></li>
+<li><p>From August to December, the top 3 most frequented stops are : La Défense - Saint Lazare - Gare de Lyon</p></li>
+</ul>
+</section>
+</section>
+<section id="exploring-overall-seasonality" class="level3">
+<h3 class="anchored" data-anchor-id="exploring-overall-seasonality">2.3 Exploring overall seasonality</h3>
+<p>Exploring overall seasonality is vital as it reveals recurring patterns and temporal fluctuations within the data, helping to identify seasonal trends and providing valuable insights for strategic planning and decision-making in various domains.</p>
+</section>
+<section id="a.-creating-a-subset-of-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="a.-creating-a-subset-of-the-data">a. Creating a subset of the data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>subset_data <span class="ot">=</span> merged_df<span class="sc">$</span>sum_nbvald[<span class="dv">1</span><span class="sc">:</span>(<span class="dv">6</span> <span class="sc">*</span> <span class="dv">60</span>)] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Comment :</strong> Since the data has a huge number of rows, we decided to visualize the seasonality on the first semester of the year. We noticed that each day has two rows in our data, that’s why we multiplied the number of months (5) by the number of days (2 * 30 = 60)</p>
+<section id="b.-visualizing-the-weekly-seasonality-of-the-time-serie-for-a-5-month-period" class="level4">
+<h4 class="anchored" data-anchor-id="b.-visualizing-the-weekly-seasonality-of-the-time-serie-for-a-5-month-period">b. Visualizing the weekly seasonality of the time serie for a 5 month period</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>decomposition <span class="ot">=</span> <span class="fu">decompose</span>(<span class="fu">ts</span>(subset_data, <span class="at">frequency =</span> <span class="dv">7</span>))</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(decomposition)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="MSG_Project_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Comment :</strong> We used 7 as a frequency to indicate that it is a weekly visualization (Since we have one row per day in our data). The recurring patterns in the seasonal component indicate that the data is subject to seasonal fluctuations. Transportation ridership exhibits a clear seasonal pattern with peaks (most likely happening during the holiday weeks). Thus, we can say that every week is not very different from the previous one. Moreover, the random fluctuations in the residual error reveal that there is some unexplained variation in the data that is not due to the trend or seasonal components. Finally, we can notice that overall, the trend is slowly increasing.</p>
+</section>
+</section>
+</section>
+<section id="comparison-with-norms" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-with-norms">3. Comparison with Norms</h2>
+<section id="normal-weeks" class="level3">
+<h3 class="anchored" data-anchor-id="normal-weeks">3.1. Normal weeks</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>baseline_week <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(day_of_week) <span class="sc">%&gt;%</span></span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_ridership =</span> <span class="fu">mean</span>(sum_nbvald, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(baseline_week, <span class="fu">aes</span>(<span class="at">x =</span> day_of_week, <span class="at">y =</span> avg_ridership)) <span class="sc">+</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"lightblue"</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Baseline Normal Week - Average Ridership"</span>,</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Day of the Week"</span>,</span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average Ridership"</span>) <span class="sc">+</span></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="MSG_Project_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Comment :</strong> Plotting the baseline normal week will help us detect the differences with the special days.</p>
+</section>
+<section id="public-holidays-dates" class="level3">
+<h3 class="anchored" data-anchor-id="public-holidays-dates">3.2. Public holidays dates</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>public_holidays_dates <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2017-07-14"</span>, <span class="st">"2017-08-15"</span>, <span class="st">"2017-11-01"</span>, <span class="st">"2017-11-11"</span>, <span class="st">"2017-12-25"</span>,</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2018-01-01"</span>, <span class="st">"2018-04-02"</span>, <span class="st">"2018-05-01"</span>, <span class="st">"2018-05-08"</span>, <span class="st">"2018-05-10"</span>, <span class="st">"2018-05-21"</span>, <span class="st">"2018-07-14"</span>, <span class="st">"2018-08-15"</span>, <span class="st">"2018-11-01"</span>, <span class="st">"2018-11-11"</span>, <span class="st">"2018-12-25"</span>,</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2019-01-01"</span>, <span class="st">"2019-04-22"</span>, <span class="st">"2019-05-01"</span>, <span class="st">"2019-05-08"</span>, <span class="st">"2019-05-30"</span>, <span class="st">"2019-06-10"</span>, <span class="st">"2019-07-14"</span>, <span class="st">"2019-08-15"</span>, <span class="st">"2019-11-01"</span>, <span class="st">"2019-11-11"</span>, <span class="st">"2019-12-25"</span>,</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2020-01-01"</span>, <span class="st">"2020-04-13"</span>, <span class="st">"2020-05-01"</span>, <span class="st">"2020-05-08"</span>, <span class="st">"2020-05-21"</span>, <span class="st">"2020-06-01"</span>, <span class="st">"2020-07-14"</span>, <span class="st">"2020-08-15"</span>, <span class="st">"2020-11-01"</span>, <span class="st">"2020-11-11"</span>, <span class="st">"2020-12-25"</span>,</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2021-01-01"</span>, <span class="st">"2021-04-05"</span>, <span class="st">"2021-05-01"</span>, <span class="st">"2021-05-08"</span>, <span class="st">"2021-05-13"</span>, <span class="st">"2021-05-24"</span>, <span class="st">"2021-07-14"</span>, <span class="st">"2021-08-15"</span>, <span class="st">"2021-11-01"</span>, <span class="st">"2021-11-11"</span>, <span class="st">"2021-12-25"</span>,</span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2022-01-01"</span>, <span class="st">"2022-04-18"</span>, <span class="st">"2022-05-01"</span>, <span class="st">"2022-05-08"</span>, <span class="st">"2022-05-26"</span>, <span class="st">"2022-06-06"</span>, <span class="st">"2022-07-14"</span>, <span class="st">"2022-08-15"</span>, <span class="st">"2022-11-01"</span>, <span class="st">"2022-11-11"</span>, <span class="st">"2022-12-25"</span></span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>merged_df<span class="sc">$</span>is_public_holiday <span class="ot">=</span> merged_df<span class="sc">$</span>JOUR <span class="sc">%in%</span> public_holidays_dates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Comment :</strong> Public holidays dates may affect our data. In fact, we all like to use that days to either go on vacation or do some tasks. In order to see the impact of the public holiday dates on the transportation ridership, we created a vector with all of the public holidays dates since July 2017. This vector was used to detect them within our data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_df, <span class="fu">aes</span>(<span class="at">x =</span> JOUR, <span class="at">y =</span> sum_nbvald)) <span class="sc">+</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> public_holidays_dates, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Impact of Public Holidays on Transportation Ridership"</span>,</span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ridership Count"</span>) <span class="sc">+</span></span>
+<span id="cb84-7"><a href="#cb84-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb84-8"><a href="#cb84-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="fu">year</span>(JOUR), <span class="at">scales =</span> <span class="st">"free_x"</span>, <span class="at">ncol =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="MSG_Project_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Comment :</strong></p>
+<ul>
+<li><p>As observed earlier, the year 2020 is marked by COVID-19. We can notice that ridership has decreased since 2020 (due to COVID-19 and increased work from home opportunities). Thus, the year 2020 may affect our results and might be considered as an outlier.</p></li>
+<li><p>In general, the least busy month is August.</p></li>
+<li><p>During almost every single public holiday day, the transportation ridership has decreased. French people might be trying to benefit from public holiday dates to either rest at home or do a trip</p></li>
+</ul>
+</section>
+<section id="new-year-day" class="level3">
+<h3 class="anchored" data-anchor-id="new-year-day">3.3. New Year Day</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>newyear <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2017-12-31"</span>, <span class="st">"2018-12-31"</span>, <span class="st">"2019-12-31"</span>,<span class="st">"2020-12-31"</span>,<span class="st">"2021-12-31"</span>,<span class="st">"2022-12-31"</span>))</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>merged_df<span class="sc">$</span>newyear <span class="ot">=</span> <span class="fu">ifelse</span>(merged_df<span class="sc">$</span>JOUR <span class="sc">%in%</span> newyear , <span class="st">"newyear"</span>, <span class="st">"NormalDay"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Comment :</strong> The New Year day is one of the most important event of the year. It is known for it is known for its parties, its celebrations and outings. In order to visualize the impact of the new year on the transportation ridership, we created a vector with all new year’s eve days. This vector was used to detect them within our data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize the total ridership for New Year's Day</span></span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>new_year_ridership <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(newyear <span class="sc">==</span> <span class="st">"newyear"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(JOUR) <span class="sc">%&gt;%</span></span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_NB_VALD =</span> <span class="fu">sum</span>(sum_nbvald, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-7"><a href="#cb86-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the average daily ridership for each year</span></span>
+<span id="cb86-8"><a href="#cb86-8" aria-hidden="true" tabindex="-1"></a>avg_daily_ridership_per_year <span class="ot">=</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb86-9"><a href="#cb86-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">format</span>(JOUR, <span class="st">"%Y"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb86-10"><a href="#cb86-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
+<span id="cb86-11"><a href="#cb86-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Avg_Daily_NB_VALD =</span> <span class="fu">mean</span>(sum_nbvald, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb86-12"><a href="#cb86-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-13"><a href="#cb86-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a Year column to the new_year_ridership for merging</span></span>
+<span id="cb86-14"><a href="#cb86-14" aria-hidden="true" tabindex="-1"></a>new_year_ridership<span class="sc">$</span>Year <span class="ot">=</span> <span class="fu">format</span>(new_year_ridership<span class="sc">$</span>JOUR, <span class="st">"%Y"</span>)</span>
+<span id="cb86-15"><a href="#cb86-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-16"><a href="#cb86-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the average daily ridership with the New Year's Day ridership</span></span>
+<span id="cb86-17"><a href="#cb86-17" aria-hidden="true" tabindex="-1"></a>new_year_ridership_with_avg <span class="ot">=</span> <span class="fu">merge</span>(new_year_ridership, avg_daily_ridership_per_year, <span class="at">by =</span> <span class="st">"Year"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb86-18"><a href="#cb86-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-19"><a href="#cb86-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(new_year_ridership_with_avg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Year       JOUR Total_NB_VALD Avg_Daily_NB_VALD
+1 2017 2017-12-31       3682781          7944.933
+2 2018 2018-12-31       6466024          8282.535
+3 2019 2019-12-31       3804044          8693.655
+4 2020 2020-12-31       5925056          4856.268
+5 2021 2021-12-31       6934704          6266.707
+6 2022 2022-12-31       5751690          7797.130</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> This part of the analysis emphasizes the fact that the new year has an impact on the transportation ridership. As we can see, the total number of validations increases significantly during that day. This is due to the fact that people go out on new year’s eve day to celebrate the start of the next year.</p>
+</section>
+</section>
+<section id="statistical-methods" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-methods">4. Statistical Methods</h2>
+<p>Conducting statistical analysis is essential as it allows for rigorous examination and interpretation of data patterns, providing quantitative insights that support informed decision-making and uncovering meaningful relationships within the dataset.</p>
+<section id="descriptive-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="descriptive-statistics">4.1. Descriptive Statistics</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(merged_df<span class="sc">$</span>sum_nbvald)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      5     794    3581    7262    8467  225524 </code></pre>
+</div>
+</div>
+</section>
+<section id="day-rolling-average-of-ridership" class="level3">
+<h3 class="anchored" data-anchor-id="day-rolling-average-of-ridership">4.2. 7-day Rolling Average of Ridership</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>merged_df<span class="sc">$</span>RollingAvg <span class="ot">=</span> <span class="fu">rollmean</span>(merged_df<span class="sc">$</span>sum_nbvald, <span class="dv">7</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">align =</span> <span class="st">"right"</span>)</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_df, <span class="fu">aes</span>(<span class="at">x =</span> JOUR)) <span class="sc">+</span></span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> sum_nbvald), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> RollingAvg), <span class="at">color =</span> <span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"7-Day Rolling Average of Ridership"</span>, <span class="at">x =</span> <span class="st">"Date"</span>, <span class="at">y =</span> <span class="st">"Ridership"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="MSG_Project_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Comment :</strong> The first line (red color) represents the raw daily ridership data. This line is less smooth and noisy, reflecting the day-to-day fluctuations in ridership. The second line (lightblue color) represents the 7-day rolling average of the ridership data. This line is smoother and provides a more accurate representation of the average ridership over a 7-day period.</p>
+<p>From 2018 to 2020, we can observe a steady increase in ridership. However, the 7-day rolling average line also reveals some irregularities in ridership that are most likely due to the pandemic, lockdowns, holidays.</p>
+</section>
+<section id="geospatial-distribution-of-ridership" class="level3">
+<h3 class="anchored" data-anchor-id="geospatial-distribution-of-ridership">4.3. Geospatial Distribution of Ridership</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_df, <span class="fu">aes</span>(<span class="at">x =</span> ZdAYEpsg2154 , <span class="at">y =</span> ZdAXEpsg2154 , <span class="at">size =</span> sum_nbvald)) <span class="sc">+</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Geospatial Distribution of Ridership"</span>, <span class="at">x =</span> <span class="st">"Longitude"</span>, <span class="at">y =</span> <span class="st">"Latitude"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="MSG_Project_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Comment :</strong> The exploration of the geospatial distribution of ridership provides valuable insights into the spatial patterns and concentration of public transportation usage, offering a geographical perspective that can inform urban planning, resource allocation, and targeted improvements in the transportation network.</p>
+</section>
+<section id="correlation-between-holidays-and-ridership" class="level3">
+<h3 class="anchored" data-anchor-id="correlation-between-holidays-and-ridership">4.4. Correlation between holidays and ridership</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>regular_weeks_data <span class="ot">=</span> merged_df[merged_df<span class="sc">$</span>is_public_holiday <span class="sc">==</span> <span class="cn">FALSE</span>, ]</span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>holiday_weeks_data <span class="ot">=</span> merged_df[merged_df<span class="sc">$</span>is_public_holiday <span class="sc">==</span> <span class="cn">TRUE</span>, ]</span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>t_test_result <span class="ot">=</span> <span class="fu">t.test</span>(regular_weeks_data<span class="sc">$</span>sum_nbvald, holiday_weeks_data<span class="sc">$</span>sum_nbvald)</span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_test_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  regular_weeks_data$sum_nbvald and holiday_weeks_data$sum_nbvald
+t = 185.2, df = 137625, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 3948.763 4033.237
+sample estimates:
+mean of x mean of y 
+ 7378.642  3387.642 </code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> Welch Two Sample t-test is a statistical test used to assess whether there is a significant difference between the means of two independent groups. The results strongly suggest that there is a significant difference in ridership (number of validations) between regular weeks and holiday weeks. The difference is substantial, with higher ridership during regular weeks compared to holiday weeks.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(merged_df<span class="sc">$</span>sum_nbvald, merged_df<span class="sc">$</span>is_public_holiday)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.04802329</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> The correlation analysis suggests a very weak negative correlation between the number of validations and the public holiday indicator.</p>
+</section>
+<section id="normality-test" class="level3">
+<h3 class="anchored" data-anchor-id="normality-test">4.5. Normality test</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>subset_size <span class="ot">=</span> <span class="dv">5000</span></span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>subset <span class="ot">=</span> merged_df[<span class="fu">sample</span>(<span class="fu">nrow</span>(merged_df), subset_size), ]</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>shapiro <span class="ot">=</span> <span class="fu">shapiro.test</span>(subset<span class="sc">$</span>sum_nbvald)</span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">=</span> shapiro<span class="sc">$</span>p.value</span>
+<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p_value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.672899e-81</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> The Shapiro-Wilk test is a hypothesis test that is applied to a sample and whose null hypothesis is that the sample has been generated from a normal distribution. Normality means that a particular sample has been generated from a Gaussian Distribution. In our case, the p-value is &lt; 0.05. Thus, the data is not normally distributed.&nbsp;</p>
+</section>
+<section id="anova-test" class="level3">
+<h3 class="anchored" data-anchor-id="anova-test">4.6. Anova test</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>anova_model <span class="ot">=</span> <span class="fu">aov</span>(sum_nbvald <span class="sc">~</span> <span class="fu">factor</span>(day_of_week), <span class="at">data =</span> merged_df)</span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anova_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                         Df    Sum Sq   Mean Sq F value Pr(&gt;F)    
+factor(day_of_week)       6 1.323e+13 2.205e+12   11428 &lt;2e-16 ***
+Residuals           3607336 6.960e+14 1.930e+08                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>anova_model <span class="ot">=</span> <span class="fu">aov</span>(sum_nbvald <span class="sc">~</span> <span class="fu">factor</span>(Month_Year), <span class="at">data =</span> merged_df)</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anova_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                        Df    Sum Sq   Mean Sq F value Pr(&gt;F)    
+factor(Month_Year)      65 1.362e+13 2.095e+11    1087 &lt;2e-16 ***
+Residuals          3607277 6.957e+14 1.928e+08                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>anova_model <span class="ot">=</span> <span class="fu">aov</span>(sum_nbvald <span class="sc">~</span> <span class="fu">factor</span>(is_public_holiday), <span class="at">data =</span> merged_df)</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anova_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                               Df    Sum Sq   Mean Sq F value Pr(&gt;F)    
+factor(is_public_holiday)       1 1.636e+12 1.636e+12    8339 &lt;2e-16 ***
+Residuals                 3607341 7.076e+14 1.962e+08                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p><strong>Comment :</strong> ANOVA, or Analysis of Variance, is a statistical test used to compare the means and differences of multiple groups. Overall, these findings suggest that the number of validations (ridership) exhibits a high level of variability and is influenced by various factors such as the day of the week, the month, whether it is a public holiday, and even the specific year.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This comprehensive transportation ridership analysis project undertook an in-depth exploration of historical public transportation data within the Île-de-France region, with the primary goal of unveiling intricate patterns and trends. The initial phases involved meticulous data collection, cleaning, and the integration of diverse datasets. Addressing missing values and ensuring data consistency were pivotal in preparing the dataset for insightful analysis. During the exploratory data analysis (EDA) phase, several noteworthy trends emerged. A significant decline in ridership was observed in March 2020, correlating with the implementation of the COVID-19 lockdown measures. Delving into daily ridership patterns, we uncovered variations across different days of the week, with distinctive peaks during holiday months (especially during the new year’s eve day) and a seasonal decrease in the summer. La Défense-Grande Arche stood out as the most frequented stop, underscoring its significance in the transportation network. Furthermore, a geospatial analysis provided a visual representation of ridership distribution across various locations, offering valuable insights for urban planning. The application of statistical methods, including hypothesis testing and correlation analysis, allowed for a deeper understanding of the factors influencing ridership trends. Notably, these methods revealed significant differences in ridership between regular and holiday weeks, emphasizing the importance of external events in shaping ridership patterns. The project concluded with robust findings that hold implications for public transport planning, resource allocation, and policy adjustments.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
