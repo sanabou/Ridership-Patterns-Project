@@ -29,12 +29,15 @@ Example of tools :
 
 Allow the user to select a reference period and a period to compare against and provide meaningfull figures to highlight the differences between the two selected periods, discriminating by day of week.
 Allow the user to quickly select a stations of interest with a webnmap and procides key statistics about the current trend for this stations.
+
 6. Statistical Methods
 Apply appropriate simple statistical methods to validate findings and draw meaningful insights from the data.
 Use statistical tests to assess the significance of observed variations, when possible.
+
 7. Report and Documentation
 Produce a comprehensive report detailing the entire analysis process, methodologies used, and key findings.
 Include insights into how the railway network’s ridership has evolved over the studied period.
+
 8. Shiny App Deployment
 Deploy the Shiny dashboard on shinyapp.io for accessibility and user interaction.
 Ensure the application is user-friendly and capable of providing dynamic insights into ridership patterns.
