@@ -1,0 +1,561 @@
+---
+title: "Analyzing and Visualizing Ridership Patterns in Île-de-France Rail Network"
+format: html
+editor: visual
+---
+
+**GROUP :** Melek Boussif - Sana Bouhaouala - Ghailene Boughzala
+
+**Class :** M2 SIA
+
+## Introduction 
+
+In the hustle and bustle of daily life, our journeys through Île-de-France become the canvas upon which diverse stories of connection and discovery unfold. More than mere transit points, the train stations in this region serve as gateways to experiences, from the familiar commute to work and the excitement of school days to the joy of exploring new destinations for leisure.
+
+Every day, Île-de-France's train stations host a symphony of journeys. The early morning rush witnesses commuters navigating their way to work, students eagerly embarking on their educational quests, and families setting out for weekend adventures. The efficiency of the train network is paramount in ensuring that these journeys are seamless, reliable, and accessible to all. However, the rhythm of people traveling through Île-de-France's railway stations is dynamic, dancing with the seasons and reflecting societal patterns.
+
+This project, spanning the years 2017 to 2022, is a deep dive into the intricate dance of ridership patterns across different periods. By dissecting the data, our aim is to shed light on how the community's travel landscape evolves during holidays, school breaks, and other distinctive times. Going beyond mere statistics, our goal is to provide decision-makers with insights that capture the nuanced shifts in ridership, facilitating informed decision-making. Through the lens of data, we aspire to unveil the unique stories woven into each commuter's journey and contribute to the ongoing evolution of transportation services in this vibrant region.
+
+## Loading the libraries
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(strucchange)
+library(zoo)
+library(sf)
+library(spdep)
+```
+
+## 1. Data Collection and Cleaning
+
+### 1.1. Merging "Historique des données de validation sur le réseau ferré"
+
+We noticed that the "Historique des données de validation sur le réseau ferré" is divided into multiple files. In order to conduct a relevant analysis, we need to merge those files to create one single file.
+
+#### a. Loading the files
+
+```{r}
+histo_directory_path = "C:/Users/msi/Documents/Gustave Eiffel/Projet R/Histo_data"
+histo_file_list = list.files(histo_directory_path, full.names = TRUE)
+print(histo_file_list)
+```
+
+#### b. Creating a function to detect delimiter in a file
+
+```{r}
+detect_delimiter <- function(file_path) {
+  lines = readLines(file_path, n = 5)
+  delimiters = c("\t", ";")
+  
+  for (delimiter in delimiters) {
+    if (any(grepl(delimiter, lines))) {
+      return(delimiter)
+    }
+  }
+  
+  stop("Unable to detect delimiter in file: ", file_path)
+}
+```
+
+#### c. Merging the files
+
+```{r}
+histo_data = data.frame()
+
+for (file in histo_file_list) {
+  delimiter = detect_delimiter(file)
+  
+  data = read.delim(file, header = TRUE, sep = delimiter, stringsAsFactors = FALSE)
+  
+  if ("lda" %in% names(data)) {
+    data = data %>% rename(ID_REFA_LDA = lda)
+  }
+
+  # Check if columns are empty before converting to character
+  if ("ID_REFA_LDA" %in% names(data) && any(!is.na(data$ID_REFA_LDA))) {
+    data$ID_REFA_LDA = as.character(data$ID_REFA_LDA)
+  }
+  
+  if ("NB_VALD" %in% names(data) && any(!is.na(data$NB_VALD))) {
+    data$NB_VALD = as.character(data$NB_VALD)
+  }
+  
+  if ("pourc_validations" %in% names(data) && any(!is.na(data$pourc_validations))) {
+    data$pourc_validations = as.character(data$pourc_validations)
+  }
+  
+  # Merge
+  histo_data = bind_rows(histo_data, data)
+}
+```
+
+#### d. Storing the data that we have obtained
+
+```{r}
+write.csv(histo_data, file.path("C:/Users/msi/Documents/Gustave Eiffel/Projet R/data/histo_dataset.csv"), row.names = FALSE)
+```
+
+### 1.2. Loading all of the dataframes
+
+```{r}
+historique = read.delim("C:/Users/msi/Documents/Gustave Eiffel/Projet R/data/histo_dataset.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+validations = read.delim("C:/Users/msi/Documents/Gustave Eiffel/Projet R/data/validations-reseau-ferre-nombre-validations-par-jour-1er-semestre.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE)
+arrets = read.delim("C:/Users/msi/Documents/Gustave Eiffel/Projet R/data/zones-d-arrets.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE)
+```
+
+### 1.3. Cleaning the data
+
+#### a. Visualizing the unique values of each column
+
+Cleaning the data is crucial as it ensures accuracy, reliability, and meaningful insights by addressing missing values, handling outliers, and rectifying inconsistencies, laying the foundation for robust analyses and reliable decision-making. In order to do the right cleaning, we visualized the unique values of each column. This helped us detect the nan values, the fact that all of the columns are typed as characters and even the presence of "?" values in some columns.
+
+#### b. Converting some columns into integers
+
+```{r}
+historique = historique %>% mutate_at(vars(CODE_STIF_TRNS), as.integer)
+historique = historique %>% mutate_at(vars(CODE_STIF_ARRET), as.integer)
+historique = historique %>% mutate_at(vars(CODE_STIF_RES), as.integer)
+historique = historique %>% mutate_at(vars(NB_VALD), as.integer)
+```
+
+#### c. Replacing empty cells with NA
+
+```{r}
+historique[historique == ""] = NA
+```
+
+#### d. Replacing "?" values in two different columns
+
+```{r}
+historique = historique %>% mutate(ID_REFA_LDA  = ifelse(ID_REFA_LDA  == "?", NA, ID_REFA_LDA ))
+
+historique = historique %>% mutate(CATEGORIE_TITRE = ifelse(CATEGORIE_TITRE == "?", NA, CATEGORIE_TITRE))
+
+```
+
+#### e. Checking for duplicated rows
+
+```{r}
+duplicated_rows = duplicated(historique)
+print(historique[duplicated_rows, ])
+```
+
+**Comment :** Handling duplicated values is important for maintaining data accuracy and preventing the distortion of statistical analyses and modeling outcomes, ensuring the reliability of insights derived from the dataset. In our case, we don't have any duplicated rows. Thus, we don't have any special treatment to do regarding the duplicated rows.
+
+#### f. Handling missing values
+
+```{r}
+# Number of missing values per column
+na_counts = colSums(is.na(historique))
+print(na_counts)
+
+# Percentage of missing values in the whole dataframe
+total_cells = prod(dim(historique))
+missing_cells = sum(is.na(historique))
+missing_percentage = missing_cells / total_cells * 100
+print(paste("Overall percentage of missing values in the dataframe:", missing_percentage, "%"))
+```
+
+**Comment :** Handling missing values is crucial because they can introduce bias, compromise data integrity, and lead to inaccurate results, affecting the reliability and interpretability of analyses and models. To achieve that, we first visualized the number of missing values within each column. Then we calculated the percentage of missing values in the whole dataframe. Since the missing values only represent 1.5% (which is not a significant percentage) of the whole data, we decided to delete them.
+
+```{r}
+historique = na.omit(historique)
+```
+
+#### g. Handling outliers
+
+```{r}
+# Number of outliers per column
+outlier_info = data.frame(Column = character(), Total_Outliers = numeric(), stringsAsFactors = FALSE)
+for (column in names(historique)) {
+  if (is.numeric(historique[[column]])) {
+    iqr <- IQR(historique[[column]], na.rm = TRUE)
+    
+    upper_bound <- quantile(historique[[column]], 0.75, na.rm = TRUE) + 1.5 * iqr
+    lower_bound <- quantile(historique[[column]], 0.25, na.rm = TRUE) - 1.5 * iqr
+    
+    outliers <- historique[[column]] > upper_bound | historique[[column]] < lower_bound
+    total_outliers <- sum(outliers)
+    outlier_info <- rbind(outlier_info, data.frame(Column = column, Total_Outliers = total_outliers))
+  }
+}
+
+# Total number of outliers across all columns
+total_outliers_all_columns <- sum(outlier_info$Total_Outliers)
+cat("Total number of outliers in the entire dataset:", total_outliers_all_columns, "\n")
+outliers_percentage = total_outliers_all_columns / total_cells * 100
+print(paste("Overall percentage of outliers in the whole dataframe:", outliers_percentage, "%"))
+
+print(outlier_info)
+```
+
+**Comment :** Handling outliers is essential to ensure the robustness and accuracy of statistical analyses and machine learning models, preventing skewed results and maintaining the integrity of data-driven insights.
+In this analysis, we first visualized the number of outliers within each column. Then we calculated the percentage of outliers in the whole dataframe. The outliers only represent 2% (which is not a significant percentage) of the whole data. However, we cannot consider them as outliers because :
+
+-   The "ID_REFA_LDA" represents ID. Having an outlier in that column doesn't mean anything
+
+-   The "CODE_STIF_ARRET" column cannot present outliers either
+
+-   The "NB_VALD" is the number of validations. Thus, depending on the day and the period, the number of validations may be more or less than usual. This information is relevant for our analysis
+
+This leaves us with this final "historique" dataframe :
+
+```{r}
+summary(historique)
+
+```
+
+### 1.4. Merging the "historique" dataframe with the "zone d'arrets" dataframe
+
+#### a. The merge
+
+```{r}
+cols = c("ZdAYEpsg2154", "ZdAXEpsg2154", "ZdCId")
+arrets = arrets[, cols, drop = FALSE]
+
+merged_df = historique %>%
+  group_by(ID_REFA_LDA, JOUR, LIBELLE_ARRET) %>%
+  summarize(sum_nbvald = sum(as.numeric(NB_VALD), na.rm = TRUE), .groups = 'drop_last') %>%
+  left_join(arrets, by = c("ID_REFA_LDA" = "ZdCId"), relationship = "many-to-many")
+```
+
+#### b. Handling missing values
+
+```{r}
+# Number of missing values per column
+na_counts_merged = colSums(is.na(merged_df))
+print(na_counts_merged)
+
+# Total percentage of the missing values
+total_cells = prod(dim(merged_df))
+missing_cells = sum(is.na(merged_df))
+missing_percentage = missing_cells / total_cells * 100
+print(paste("Overall percentage of missing values in the merged dataframe:", missing_percentage, "%"))
+```
+
+**Comment :** Just like the other "historique" dataframe, we first visualized the number of missing values within each column and the percentage of missing values in the whole dataframe. The missing values only represent 0.04% (which is really not a significant percentage) of the whole data. Thus, we decided to delete them.
+
+```{r}
+merged_df = na.omit(merged_df)
+```
+
+#### c. Dividing the JOUR column into month and day of week
+
+```{r}
+merged_df$JOUR = as.Date(merged_df$JOUR, format = "%d/%m/%Y")
+
+merged_df = merged_df %>%
+  mutate(month = month(JOUR), day_of_week = wday(JOUR, label = TRUE))
+
+merged_df$month = factor(merged_df$month, levels = unique(merged_df$month), labels = month.name)
+
+merged_df$Month_Year = format(merged_df$JOUR, "%Y-%m")
+```
+
+**Comment :** Dividing a date variable will help us conduct different relevant analysis, depending on the months, the day of weeks and the years.
+
+## 2. Exploratory Data Analysis (EDA)
+
+Conducting Exploratory Data Analysis (EDA) is essential because it helps uncover patterns, relationships, and key insights within a dataset, providing a foundational understanding of the data's characteristics, facilitating informed decision-making, and guiding subsequent modeling or analytical approaches.
+
+### 2.1. Exploring overall trends
+
+Exploring overall trends is crucial as it provides a comprehensive understanding of the dataset's patterns, enabling the identification of significant temporal variations and facilitating informed decision-making in data-driven analyses.
+
+#### a. Plotting ridership trends (month - year)
+
+```{r}
+ggplot(merged_df, aes(x = Month_Year, y = sum_nbvald)) +
+  geom_bar(stat = "summary", fun = "mean", fill = "red") +
+  labs(title = "Monthly Average Ridership (per year)", x = "Month", y = "Mean Validations") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+**Comment :** A significant drop (nb_vald near 0) is observed around the beginning of 2020, specifically March 2020, when there was a lockdown against COVID-19. Also, due to covid 19 we can see that there are 2 months where there is a big decrease in the validation
+
+#### b. Plotting ridership trends (day of week)
+
+```{r}
+ggplot(merged_df, aes(x = day_of_week, y = sum_nbvald)) +
+  geom_line() +
+  labs(title = "Daily Ridership Trends",
+       x = "Date",
+       y = "sum_nbvald")
+
+avg_weekday_ride = merged_df %>%
+  group_by(day_of_week) %>%
+  summarize(Avg_NB_VALD = mean(sum_nbvald, na.rm = TRUE))
+print(avg_weekday_ride)
+```
+
+```{r}
+avg_weekday_ride = merged_df %>%
+  group_by(day_of_week) %>%
+  summarize(Avg_NB_VALD = mean(sum_nbvald, na.rm = TRUE))
+print(avg_weekday_ride)
+```
+
+**Comment :** We can see that :
+
+-   On Saturadys and Sundays people prefer to stay home after a week of work
+
+-   Ridership on Mondays and Fridays isslightly less that during the middle of the week. This is probably due to the fact that most of the people who work take that day to work from home
+
+-   The ridership peak is on Tuesday and Thursday. Whereas, Saturday and Sunday, especially Sunday are significantly lower compared to other days. This is due to the fact that people take time to rest during the weekends.
+
+#### c. Plotting ridership trends (month)
+
+```{r}
+ggplot(merged_df, aes(x = month, y = sum_nbvald)) +
+  geom_line() +
+  labs(title = "Monthly Ridership Trends",
+       x = "Month",
+       y = "sum_nbvald")
+```
+
+**Comment :** A decrease is observed around August, a period when many French people go on summer vacation. We can also observe that October and November are the months with the highest ridership (slightly above average).
+
+### 2.2 Most frequented stops
+
+#### a. Top 5 most frequented stops
+
+```{r}
+top_5_arrets = merged_df %>%
+  group_by(LIBELLE_ARRET) %>%
+  summarise(total_validations = sum(sum_nbvald, na.rm = TRUE)) %>%
+  top_n(5, total_validations) %>%
+  arrange(desc(total_validations))
+
+print(top_5_arrets)
+
+```
+
+#### b. Top 3 most frequented stops per day
+
+```{r}
+top_3_arrets_per_day = merged_df %>%
+  group_by(day_of_week, LIBELLE_ARRET) %>%
+  summarise(total_validations = sum(sum_nbvald, na.rm = TRUE)) %>%
+  group_by(day_of_week) %>%
+  top_n(3, total_validations) %>%
+  arrange(day_of_week, desc(total_validations))
+
+print(top_3_arrets_per_day)
+```
+
+**Comment :** On weekdays, La Défense is always in the first position. Whereas, on Sundays, Gare de Lyon overtakes La Défense, but the top 3 remains the same.
+
+#### c. Top 3 most frequented stops per day
+
+```{r}
+top_3_arrets_per_month = merged_df %>%
+  group_by(month, LIBELLE_ARRET) %>%
+  summarise(total_validations = sum(sum_nbvald, na.rm = TRUE)) %>%
+  group_by(month) %>%
+  top_n(3, total_validations) %>%
+  arrange(month, desc(total_validations))
+
+print(top_3_arrets_per_month)
+```
+
+**Comment :**
+
+-   From January to August, the top 3 most frequented stops are : La Défense - Gare de Lyon - Montparnasse
+
+-   From August to December, the top 3 most frequented stops are : La Défense - Saint Lazare - Gare de Lyon
+
+### 2.3 Exploring overall seasonality
+
+Exploring overall seasonality is vital as it reveals recurring patterns and temporal fluctuations within the data, helping to identify seasonal trends and providing valuable insights for strategic planning and decision-making in various domains.
+
+### a. Creating a subset of the data 
+
+```{r}
+subset_data = merged_df$sum_nbvald[1:(6 * 60)] 
+```
+
+**Comment :** Since the data has a huge number of rows, we decided to visualize the seasonality on the first semester of the year. We noticed that each day has two rows in our data, that's why we multiplied the number of months (5) by the number of days (2 \* 30 = 60)
+
+#### b. Visualizing the weekly seasonality of the time serie for a 5 month period
+
+```{r}
+decomposition = decompose(ts(subset_data, frequency = 7))
+plot(decomposition)
+```
+
+**Comment :** We used 7 as a frequency to indicate that it is a weekly visualization (Since we have one row per day in our data). The recurring patterns in the seasonal component indicate that the data is subject to seasonal fluctuations. Transportation ridership exhibits a clear seasonal pattern with peaks (most likely happening during the holiday weeks). Thus, we can say that every week is not very different from the previous one. Moreover, the random fluctuations in the residual error reveal that there is some unexplained variation in the data that is not due to the trend or seasonal components. Finally, we can notice that overall, the trend is slowly increasing.
+
+## 3. Comparison with Norms
+
+### 3.1. Normal weeks
+
+```{r}
+baseline_week = merged_df %>%
+  group_by(day_of_week) %>%
+  summarize(avg_ridership = mean(sum_nbvald, na.rm = TRUE))
+```
+
+```{r}
+ggplot(baseline_week, aes(x = day_of_week, y = avg_ridership)) +
+  geom_bar(stat = "identity", fill = "lightblue", color = "blue") +
+  labs(title = "Baseline Normal Week - Average Ridership",
+       x = "Day of the Week",
+       y = "Average Ridership") +
+  theme_minimal()
+```
+
+**Comment :** Plotting the baseline normal week will help us detect the differences with the special days.
+
+### 3.2. Public holidays dates
+
+```{r}
+public_holidays_dates <- as.Date(c(
+  "2017-07-14", "2017-08-15", "2017-11-01", "2017-11-11", "2017-12-25",
+  "2018-01-01", "2018-04-02", "2018-05-01", "2018-05-08", "2018-05-10", "2018-05-21", "2018-07-14", "2018-08-15", "2018-11-01", "2018-11-11", "2018-12-25",
+  "2019-01-01", "2019-04-22", "2019-05-01", "2019-05-08", "2019-05-30", "2019-06-10", "2019-07-14", "2019-08-15", "2019-11-01", "2019-11-11", "2019-12-25",
+  "2020-01-01", "2020-04-13", "2020-05-01", "2020-05-08", "2020-05-21", "2020-06-01", "2020-07-14", "2020-08-15", "2020-11-01", "2020-11-11", "2020-12-25",
+  "2021-01-01", "2021-04-05", "2021-05-01", "2021-05-08", "2021-05-13", "2021-05-24", "2021-07-14", "2021-08-15", "2021-11-01", "2021-11-11", "2021-12-25",
+  "2022-01-01", "2022-04-18", "2022-05-01", "2022-05-08", "2022-05-26", "2022-06-06", "2022-07-14", "2022-08-15", "2022-11-01", "2022-11-11", "2022-12-25"
+))
+merged_df$is_public_holiday = merged_df$JOUR %in% public_holidays_dates
+```
+
+**Comment :** Public holidays dates may affect our data. In fact, we all like to use that days to either go on vacation or do some tasks. In order to see the impact of the public holiday dates on the transportation ridership, we created a vector with all of the public holidays dates since July 2017. This vector was used to detect them within our data.
+
+```{r}
+ggplot(merged_df, aes(x = JOUR, y = sum_nbvald)) +
+  geom_line() +
+  geom_vline(xintercept = public_holidays_dates, linetype = "dashed", color = "red", alpha = 0.5) +
+  labs(title = "Impact of Public Holidays on Transportation Ridership",
+       x = "Date",
+       y = "Ridership Count") +
+  theme_minimal() +
+  facet_wrap(~year(JOUR), scales = "free_x", ncol = 1)
+```
+
+**Comment :**
+
+-   As observed earlier, the year 2020 is marked by COVID-19. We can notice that ridership has decreased since 2020 (due to COVID-19 and increased work from home opportunities). Thus, the year 2020 may affect our results and might be considered as an outlier.
+
+-   In general, the least busy month is August.
+
+-   During almost every single public holiday day, the transportation ridership has decreased. French people might be trying to benefit from public holiday dates to either rest at home or do a trip
+
+### 3.3. New Year Day
+
+```{r}
+newyear = as.Date(c("2017-12-31", "2018-12-31", "2019-12-31","2020-12-31","2021-12-31","2022-12-31"))
+merged_df$newyear = ifelse(merged_df$JOUR %in% newyear , "newyear", "NormalDay")
+```
+
+**Comment :** The New Year day is one of the most important event of the year. It is known for it is known for its parties, its celebrations and outings. In order to visualize the impact of the new year on the transportation ridership, we created a vector with all new year's eve days. This vector was used to detect them within our data.
+
+```{r}
+# Summarize the total ridership for New Year's Day
+new_year_ridership = merged_df %>%
+  filter(newyear == "newyear") %>%
+  group_by(JOUR) %>%
+  summarize(Total_NB_VALD = sum(sum_nbvald, na.rm = TRUE))
+
+# Calculate the average daily ridership for each year
+avg_daily_ridership_per_year = merged_df %>%
+  mutate(Year = format(JOUR, "%Y")) %>%
+  group_by(Year) %>%
+  summarize(Avg_Daily_NB_VALD = mean(sum_nbvald, na.rm = TRUE))
+
+# Add a Year column to the new_year_ridership for merging
+new_year_ridership$Year = format(new_year_ridership$JOUR, "%Y")
+
+# Merge the average daily ridership with the New Year's Day ridership
+new_year_ridership_with_avg = merge(new_year_ridership, avg_daily_ridership_per_year, by = "Year", all.x = TRUE)
+
+print(new_year_ridership_with_avg)
+```
+
+**Comment :** This part of the analysis emphasizes the fact that the new year has an impact on the transportation ridership. As we can see, the total number of validations increases significantly during that day. This is due to the fact that people go out on new year's eve day to celebrate the start of the next year.
+
+## 4. Statistical Methods
+
+Conducting statistical analysis is essential as it allows for rigorous examination and interpretation of data patterns, providing quantitative insights that support informed decision-making and uncovering meaningful relationships within the dataset.
+
+### 4.1. Descriptive Statistics
+
+```{r}
+summary(merged_df$sum_nbvald)
+```
+
+### 4.2. 7-day Rolling Average of Ridership
+
+```{r}
+merged_df$RollingAvg = rollmean(merged_df$sum_nbvald, 7, fill = NA, align = "right")
+
+ggplot(merged_df, aes(x = JOUR)) +
+  geom_line(aes(y = sum_nbvald), color = "red") +
+  geom_line(aes(y = RollingAvg), color = "lightblue") +
+  labs(title = "7-Day Rolling Average of Ridership", x = "Date", y = "Ridership")
+```
+
+**Comment :** The first line (red color) represents the raw daily ridership data. This line is less smooth and noisy, reflecting the day-to-day fluctuations in ridership. The second line (lightblue color) represents the 7-day rolling average of the ridership data. This line is smoother and provides a more accurate representation of the average ridership over a 7-day period.
+
+From 2018 to 2020, we can observe a steady increase in ridership. However, the 7-day rolling average line also reveals some irregularities in ridership that are most likely due to the pandemic, lockdowns, holidays.
+
+### 4.3. Geospatial Distribution of Ridership
+
+```{r}
+ggplot(merged_df, aes(x = ZdAYEpsg2154 , y = ZdAXEpsg2154 , size = sum_nbvald)) +
+  geom_point(color = "red") +
+  labs(title = "Geospatial Distribution of Ridership", x = "Longitude", y = "Latitude")
+```
+
+**Comment :** The exploration of the geospatial distribution of ridership provides valuable insights into the spatial patterns and concentration of public transportation usage, offering a geographical perspective that can inform urban planning, resource allocation, and targeted improvements in the transportation network.
+
+### 4.4. Correlation between holidays and ridership
+
+```{r}
+regular_weeks_data = merged_df[merged_df$is_public_holiday == FALSE, ]
+holiday_weeks_data = merged_df[merged_df$is_public_holiday == TRUE, ]
+
+t_test_result = t.test(regular_weeks_data$sum_nbvald, holiday_weeks_data$sum_nbvald)
+print(t_test_result)
+```
+
+**Comment :** Welch Two Sample t-test is a statistical test used to assess whether there is a significant difference between the means of two independent groups. The results strongly suggest that there is a significant difference in ridership (number of validations) between regular weeks and holiday weeks. The difference is substantial, with higher ridership during regular weeks compared to holiday weeks.
+
+```{r}
+cor(merged_df$sum_nbvald, merged_df$is_public_holiday)
+```
+
+**Comment :** The correlation analysis suggests a very weak negative correlation between the number of validations and the public holiday indicator.
+
+### 4.5. Normality test 
+
+```{r}
+set.seed(123)
+subset_size = 5000
+subset = merged_df[sample(nrow(merged_df), subset_size), ]
+
+shapiro = shapiro.test(subset$sum_nbvald)
+p_value = shapiro$p.value
+print(p_value)
+```
+
+**Comment :** The Shapiro-Wilk test is a hypothesis test that is applied to a sample and whose null hypothesis is that the sample has been generated from a normal distribution. Normality means that a particular sample has been generated from a Gaussian Distribution. In our case, the p-value is \< 0.05. Thus, the data is not normally distributed. 
+
+### 4.6. Anova test 
+
+```{r}
+anova_model = aov(sum_nbvald ~ factor(day_of_week), data = merged_df)
+summary(anova_model)
+anova_model = aov(sum_nbvald ~ factor(Month_Year), data = merged_df)
+summary(anova_model)
+anova_model = aov(sum_nbvald ~ factor(is_public_holiday), data = merged_df)
+summary(anova_model)
+```
+
+**Comment :** ANOVA, or Analysis of Variance, is a statistical test used to compare the means and differences of multiple groups. Overall, these findings suggest that the number of validations (ridership) exhibits a high level of variability and is influenced by various factors such as the day of the week, the month, whether it is a public holiday, and even the specific year.
+
+## Conclusion
+
+This comprehensive transportation ridership analysis project undertook an in-depth exploration of historical public transportation data within the Île-de-France region, with the primary goal of unveiling intricate patterns and trends. The initial phases involved meticulous data collection, cleaning, and the integration of diverse datasets. Addressing missing values and ensuring data consistency were pivotal in preparing the dataset for insightful analysis. During the exploratory data analysis (EDA) phase, several noteworthy trends emerged. A significant decline in ridership was observed in March 2020, correlating with the implementation of the COVID-19 lockdown measures. Delving into daily ridership patterns, we uncovered variations across different days of the week, with distinctive peaks during holiday months (especially during the new year's eve day) and a seasonal decrease in the summer. La Défense-Grande Arche stood out as the most frequented stop, underscoring its significance in the transportation network. Furthermore, a geospatial analysis provided a visual representation of ridership distribution across various locations, offering valuable insights for urban planning. The application of statistical methods, including hypothesis testing and correlation analysis, allowed for a deeper understanding of the factors influencing ridership trends. Notably, these methods revealed significant differences in ridership between regular and holiday weeks, emphasizing the importance of external events in shaping ridership patterns. The project concluded with robust findings that hold implications for public transport planning, resource allocation, and policy adjustments.
